@@ -83,6 +83,10 @@ class Model():
         self.pos_logits = tf.reduce_sum(pos_emb * seq_emb, -1)
         self.neg_logits = tf.reduce_sum(neg_emb * seq_emb, -1)
 
+        # seq
+        self.seq_logits = tf.matmul(seq_emb, tf.transpose(item_emb_table))     # [batch * maxlen, hidden_units] X transpose([itemnum + 1, hidden_units]) = [batch * maxlen, itemnum + 1]
+        self.seq_logits = tf.reshape(self.seq_logits, [tf.shape(self.input_seq)[0], args.maxlen, itemnum + 1])
+
         # print(pos_emb)           (?, 50)
         # print(seq_emb)           (?, 50)
         # print(pos_emb * seq_emb) (?, 50)
