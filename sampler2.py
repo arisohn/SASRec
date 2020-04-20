@@ -1,5 +1,5 @@
 import numpy as np
-import queue
+import Queue as queue
 # from multiprocessing import Process, Queue
 
 
