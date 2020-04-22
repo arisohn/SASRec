@@ -2,7 +2,7 @@ import os
 import time
 import argparse
 import tensorflow as tf
-from sampler2 import WarpSampler
+from sampler3 import WarpSampler
 from model2 import Model
 from tqdm import tqdm
 from util import *
@@ -52,38 +52,27 @@ try:
 
         for step in tqdm(range(num_batch), total=num_batch, ncols=70, leave=False, unit='b'):
             u, seq, pos, neg = sampler.next_batch()
-
             auc, loss, _ = sess.run([model.auc, model.loss, model.train_op], {model.u: u, model.input_seq: seq, model.pos: pos, model.neg: neg, model.is_training: True})
 
-            if epoch % 20 == 0:
-                seq_logits = sess.run(model.seq_logits, {model.u: u, model.input_seq: seq, model.is_training: False})
+        # evaluation new dataset
+        if True:
+            u, seq, pos, neg = sampler.next_batch()
+            seq_logits = sess.run(model.seq_logits, {model.u: u, model.input_seq: seq, model.is_training: False})
 
-                print np.shape(seq)
-                print seq_logits.shape
-                print seq[0]
-                print pos[0]
-                print np.argmax(seq_logits[0], axis =-1)
-                print auc, loss 
+            print np.shape(seq)
+            print seq_logits.shape
+            print seq[0]
+            print pos[0]
+            print np.argmax(seq_logits[0], axis =-1)
 
-                """
-                    t1 = time.time() - t0
-                    T += t1
-                    print 'Evaluating',
-                    t_test = evaluate(model, dataset, args, sess)
-                    t_valid = evaluate_valid(model, dataset, args, sess)
-                    print ''
-                    print 'epoch:%d, time: %f(s), valid (NDCG@10: %.4f, HR@10: %.4f), test (NDCG@10: %.4f, HR@10: %.4f)' % (
-                    epoch, T, t_valid[0], t_valid[1], t_test[0], t_test[1])
+            print seq[1]
+            print pos[1]
+            print np.argmax(seq_logits[1], axis =-1)
 
-                    f.write(str(t_valid) + ' ' + str(t_test) + '\n')
-                    f.flush()
-                    t0 = time.time()
-                 """
+            print auc, loss 
 
 except Exception as e:
     print(e)
-    sampler.close()
     exit(1)
 
-sampler.close()
 print("Done")
